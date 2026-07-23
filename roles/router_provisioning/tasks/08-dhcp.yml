@@ -1,0 +1,43 @@
+---
+- name: "exclude address from dhcp-pool"
+  cisco.ios.ios_config:
+    lines:
+      - ip dhcp excluded-address {{ item }}
+  loop: "{{ exclude_address }}"
+  when: 
+    - dhcp_pool | default(false) | bool
+    - exclude_address is defined
+- name: "create pool for dhcp"
+  cisco.ios.ios_config:
+    parents: ip dhcp pool {{ item.name }}
+    lines:
+      - network {{ item.subnet_network }} {{ item.subnet_mask }}
+      - default-router {{ item.default_router }}
+      - dns-server {{ item.dns_server | join(' ') }}
+      - "domain-name {{ item.domain_name | default('lab.local') }}"
+      - "lease {{ item.lease_days | default(1) }} {{ item.lease_hours | default(0) }}"
+  loop: "{{ dhcp_pools }}"
+  when: 
+    - dhcp_pool | default(false) | bool
+    - dhcp_pools is defined
+
+- name: "configure dhcp-helper"
+  cisco.ios.ios_config:
+    parents: interface {{ item.name }}
+    lines:
+      -  ip helper-address {{ item.ip_helper }}
+  loop: "{{ interfaces }}"
+  when:
+    - dhcp_helper | default(false) | bool
+    - interfaces is defined
+
+- name: "configure tftp option 150 on dhcp pools"
+  cisco.ios.ios_config:
+    parents: ip dhcp pool {{ item.name }}
+    lines:
+      - "{{ 'option 150 ip ' ~ item.tftp_ip if item.tftp_enabled | bool else 'no option 150' }}"
+  loop: "{{ dhcp_pools }}"
+  when: 
+    - dhcp_pool | default(false) | bool
+    - dhcp_pools is defined
+    - item.tftp_enabled is defined  
