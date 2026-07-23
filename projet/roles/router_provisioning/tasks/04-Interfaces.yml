@@ -1,0 +1,48 @@
+---
+# roles/router_provisioning/tasks/04-Interfaces.yml
+
+- name: "Configuration des proprietes physiques des interfaces (Interfaces Physiques uniquement)"
+  cisco.ios.ios_interfaces:
+    config:
+      - name: "{{ item.name }}"
+        description: "{{ item.description | default('Automated via Web') }}"
+        enabled: "{{ item.enabled | default(true) }}"
+  loop: "{{ network_interfaces }}"
+  when: 
+    - network_interfaces is defined
+    - "'.' not in item.name"
+
+- name: "Configuration de l'encapsulation Dot1Q (Sous-interfaces uniquement)"
+  cisco.ios.ios_config:
+    parents: "interface {{ item.name }}"
+    lines:
+      - "encapsulation dot1Q {{ item.name.split('.')[1] }}"
+      - "description {{ item.description | default('Automated via Web') }}"
+  loop: "{{ network_interfaces }}"
+  when:
+    - network_interfaces is defined
+    - "'.' in item.name"
+
+- name: "Configuration des adresses IP Statiques"
+  cisco.ios.ios_l3_interfaces:
+    config:
+      - name: "{{ item.name }}"
+        ipv4:
+          - address: "{{ item.ip_address }}/{{ (item.ip_address + '/' + item.netmask) | ipaddr('prefix') }}"
+  loop: "{{ network_interfaces }}"
+  when: 
+    - network_interfaces is defined 
+    - item.ip_address is defined 
+    - item.ip_address != "dhcp"
+    - item.netmask is defined
+
+- name: "Configuration des interfaces en mode DHCP"
+  cisco.ios.ios_config:
+    parents: "interface {{ item.name }}"
+    lines:
+      - ip address dhcp
+  loop: "{{ network_interfaces }}"
+  when: 
+    - network_interfaces is defined 
+    - item.ip_address is defined 
+    - item.ip_address == "dhcp"

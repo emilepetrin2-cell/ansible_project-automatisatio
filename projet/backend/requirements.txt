@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+sqlalchemy
+pydantic
+slowapi
+passlib[bcrypt]
+pwdlib[argon2]
+argon2-cffi
+python-jose[cryptography]
+python-multipart

@@ -1,0 +1,126 @@
+# Interrupteurs d'activation des modules issus du formulaire web (True/False)
+trigger_backup: true
+trigger_hardening: true
+trigger_base_services: true
+trigger_interfaces: true
+trigger_routing: true
+trigger_nat: true
+trigger_acls: true
+trigger_dhcp: true
+
+# Donnees du Module 2 (Hardening)
+aaa_enabled: true
+management_subnet: "10.254.0.0"
+management_wildcard: "0.0.255.255"
+
+# Donnees du Module 3 (Services)
+ntp_timezone: "EST"
+ntp_server: "192.168.10.5"
+syslog_server: "192.168.10.6"
+snmp_group: "NOC_ADMIN"
+
+# Donnees du Module 4 (Interfaces - Genere via un tableau dynamique sur le site)
+network_interfaces:
+  - name: "GigabitEthernet1"
+    description: "Lien WAN Principal"
+    enabled: true
+    ip_address: dhcp
+    ospf_enabled: false
+  - name: "GigabitEthernet2"
+    description: "LAN Bureautique"
+    enabled: true
+    ip_address: "10.10.10.1"
+    netmask: "255.255.255.0"
+    ospf_enabled: true
+  - name: "Loopback0"
+    description: "Loopback Management"
+    enabled: true
+    ip_address: "1.1.1.1"
+    netmask: "255.255.255.255"
+    ospf_enabled: true
+
+# Variables pour le module 5
+enable_ospf: true
+ospf_process_id: 10
+ospf_router_id: "1.1.1.1"
+ospf_area_id: "0"
+
+enable_bgp: false 
+
+
+# variable acl nat
+interface_nat_outside: GigabitEthernet1
+interfaces_nat_inside:
+  - GigabitEthernet2
+  - GigabitEthernet3
+number_acl: "1"
+subnet_choose:
+  - ip: 192.168.20.0
+    wildcard_mask: 0.0.0.255
+
+cisco_acls_config:
+  - afi: ipv4
+    acls:
+      - name: SECURE_WEB_ACL
+        aces:
+          - sequence: 10
+            grant: deny
+            protocol: tcp
+            source:
+              any: true
+            destination:
+              any: true
+              port_protocol:
+                eq: www
+            protocol_options:
+              tcp:
+                fin: true
+                ack: true
+
+          - sequence: 20
+            grant: permit
+            protocol: ip
+            source:
+              address: 192.168.1.0
+              wildcard_bits: 0.0.0.255
+            destination:
+              any: true
+acl_bindings:
+  - name: GigabitEthernet1
+    acl: SECURE_WEB_ACL
+    direction: out
+
+
+# module dhcp:
+dhcp_pool: true
+exclude_address:
+  - 192.168.20.1
+  - 192.168.20.10
+dhcp_pools:
+  - name: pool10
+    subnet_network: 192.168.20.0
+    subnet_mask: 255.255.255.0
+    default_router: 192.168.20.1
+    dns_server:
+      - 8.8.8.8
+      - 1.1.1.1
+    domain_name: "lab.local"
+    lease_days: 1
+    lease_hours: 0
+    tftp_enabled: true
+    tftp_ip: "192.168.10.5"
+ 
+
+dhcp_helper: true
+interfaces: 
+  - name: GigabitEthernet2
+    ip_helper: 10.0.100.1
+
+    
+
+
+
+  
+
+
+  
