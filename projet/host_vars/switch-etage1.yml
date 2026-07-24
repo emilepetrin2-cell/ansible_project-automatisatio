@@ -1,0 +1,40 @@
+access_port:
+- id: 50
+  name: GigabitEthernet1/0/2
+  storm_control:
+    broadcast: 10.0
+    enabled: true
+    multicast: 10.0
+- id: 60
+  name: GigabitEthernet1/0/3
+  storm_control:
+    broadcast: 10.0
+    enabled: true
+    multicast: 10.0
+activate_blackholing: true
+activate_dhcp_snooping: true
+activate_network_migration: true
+activate_port_security: false
+activate_storm_control: true
+management_gateway: 192.168.75.1
+management_ip: 192.168.75.2
+management_mask: 255.255.255.0
+management_vlan_id: 750
+trunk_port:
+- name: GigabitEthernet1/0/1
+  storm_control:
+    broadcast: 10.0
+    enabled: false
+    multicast: 10.0
+vlan:
+- 50
+- 60
+- 80
+
+ansible_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          66323062653930373661316133653161653030343838656632336432346631303564343961366166
+          6339356164663833396238333362643061356161343333380a346461353861343931316164336466
+          32623766313634333734396339623662363331386136366531343135303139623533616230623333
+          3636663965373732640a366262636331336262363763316435303635393737356235343530663163
+          3366

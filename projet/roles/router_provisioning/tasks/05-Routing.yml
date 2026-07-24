@@ -1,0 +1,30 @@
+---
+# roles/router_provisioning/tasks/05-Routing.yml
+
+- name: Creation du processus OSPF global (Module Natif)
+  cisco.ios.ios_ospfv2:
+    config:
+      processes:
+        - process_id: "{{ ospf_process_id | int }}"
+          router_id: "{{ ospf_router_id }}"
+  when: enable_ospf | default(false)
+
+- name: Association dynamique des interfaces a l'aire OSPF (CLI Directe)
+  cisco.ios.ios_config:
+    parents: "interface {{ item.name }}"
+    lines:
+      - "ip ospf {{ ospf_process_id | int }} area {{ ospf_area_id | default('0') }}"
+  loop: "{{ network_interfaces }}"
+  when: 
+    - enable_ospf | default(false) 
+    - network_interfaces is defined 
+    - item.ospf_enabled | default(false)
+
+- name: Configuration BGP via module natif
+  cisco.ios.ios_bgp_global:    
+    config:
+      as_number: "{{ bgp_local_as | default(65000) }}"
+      neighbors:
+        - neighbor: "{{ bgp_neighbor_ip | default('0.0.0.0') }}"
+          remote_as: "{{ bgp_neighbor_as | default(65000) }}"
+  when: enable_bgp | default(false)

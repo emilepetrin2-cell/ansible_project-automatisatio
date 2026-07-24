@@ -1,0 +1,13 @@
+---
+- name: Appliquer la configuration des ACLs
+  cisco.ios.ios_acls:
+    state: merged
+    config: "{{ cisco_acls_config }}"
+
+- name: Associer les ACLs aux interfaces physiques
+  cisco.ios.ios_config:
+    parents: "interface {{ item.name}}"
+    lines:
+      - "ip access-group {{ item.acl }} {{ item.direction }}"
+  loop: "{{ acl_bindings }}"
+  when: acl_bindings is defined

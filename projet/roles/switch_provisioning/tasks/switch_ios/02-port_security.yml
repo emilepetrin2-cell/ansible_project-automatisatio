@@ -1,0 +1,9 @@
+---
+- name: L2 phase - port security activation (Maximum 2 MAC, Shutdown si violation)
+  cisco.ios.ios_config: 
+    lines:
+      - switchport port-security
+      - switchport port-security maximum 2
+      - switchport port-security violation shutdown
+    parents: "interface {{ item.name }}"
+  loop: "{{ access_port | default([]) }}"

@@ -1,0 +1,21 @@
+all_vlans:
+  - { id: 10, name: "management" }
+  - { id: 20, name: "users" }
+  - { id: 30, name: "syslog" }
+  - { id: 40, name: "serveur_inside" }
+  - { id: 999, name: "close interfaces" }
+  - { id: 750, name: "SVI" }
+
+storm_control_default:
+  broadcast: 1.0
+  multicast: 10.0
+  unicast: 5.0
+ 
+
+
+     
+
+
+        
+
+        

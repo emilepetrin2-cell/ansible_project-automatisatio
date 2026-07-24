@@ -1,0 +1,39 @@
+---
+# roles/switch_provisioning/tasks/main.yml
+- name: security block
+  block:
+    - name: stage one - vlans and ports management
+      ansible.builtin.include_tasks: 01-vlans.yml
+      
+    - name: stage two - port security configuration
+      ansible.builtin.include_tasks: 02-port_security.yml
+      when: activate_port_security | default(false) | bool
+
+    - name: stage three - DHCP snooping activation
+      ansible.builtin.include_tasks: 03-DHCP_snooping.yml
+      when: activate_dhcp_snooping | default(false) | bool
+
+    - name: stage four - storm control configuration
+      ansible.builtin.include_tasks: 04-storm_control.yml
+      when: activate_storm_control | default(false) | bool
+
+    - name: stage five - protect unused ports (Blackholing)
+      ansible.builtin.include_tasks: 05-Blackholing.yml
+      when: activate_blackholing | default(false) | bool
+
+    - name: stage six - Management and comfort features
+      ansible.builtin.include_tasks: 06-Management.yml
+
+    # ON DePLACE LA MIGRATION RESEAU AVANT LA SAUVEGARDE
+    - name: stage seven - management interface and gateway (Network Migration)
+      ansible.builtin.include_tasks: 07-gestion(SVI).yml
+      when: activate_network_migration | default(false) | bool
+
+    # SAUVEGARDE EN NVRAM EN TOUT DERNIER
+    - name: stage eight - saving configuration
+      ansible.builtin.include_tasks: 08-save.yml
+
+  rescue:
+    - name: Alerte - a task failed
+      ansible.builtin.fail:
+        msg: "La configuration du switch a echoue. Retablissement ou verification requise."
