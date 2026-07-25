@@ -1,5 +1,0 @@
----
-# roles/switch_provisioning/tasks/main.yml
-
-- name: Chargement des taches specifiques au constructeur
-  ansible.builtin.include_tasks: "{{ role_path }}/tasks/switch_{{ ansible_network_os.split('.')[-1] }}/main.yml"
