@@ -1,0 +1,30 @@
+---
+- name: L2 PHASE - Collecter les interfaces physiques du switch
+  cisco.ios.ios_facts:
+    gather_subset:
+      - interfaces
+
+- name: L2 PHASE - Calculer la liste des ports inutilises
+  ansible.builtin.set_fact:
+    unused_ports: >-
+      {{
+        ansible_facts.net_interfaces.keys() | list 
+        | difference((access_port | default([]) + trunk_port | default([])) | map(attribute='name') | list) 
+        | reject('search', 'Vlan') 
+        | reject('search', 'Port-channel') 
+        | reject('equalto', 'GigabitEthernet0/0') 
+        | list
+      }}
+  when: ansible_facts.net_interfaces is defined
+
+- name: L2 PHASE - Construire la configuration de desactivation
+  ansible.builtin.set_fact:
+    interfaces_config: "{{ interfaces_config | default([]) + [ {'name': item, 'enabled': false} ] }}"
+  loop: "{{ unused_ports | default([]) }}"
+  when: unused_ports is defined
+
+- name: L2 PHASE - Desactiver les ports inutilises en une seule operation (Blackholing)
+  cisco.ios.ios_interfaces:
+    config: "{{ interfaces_config }}"
+    state: merged
+  when: interfaces_config is defined

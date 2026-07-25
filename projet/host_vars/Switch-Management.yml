@@ -1,0 +1,14 @@
+access_port: []
+activate_blackholing: false
+activate_dhcp_snooping: false
+activate_network_migration: false
+activate_port_security: false
+activate_storm_control: false
+management_gateway: 192.168.1.1
+management_ip: 192.168.1.10
+management_mask: 255.255.255.0
+management_vlan_id: 750
+trunk_port: []
+vlan:
+- 10
+- 30

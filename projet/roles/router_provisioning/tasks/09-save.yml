@@ -1,0 +1,27 @@
+---
+# /home/elpetrino/projet/roles/router_provisioning/tasks/06-save.yml
+
+- name: Sauvegarde de la configuration courante (copy run start)
+  cisco.ios.ios_command:
+    commands: write memory
+  register: router_save
+
+- name: Construction de la liste des modules effectivement executes
+  ansible.builtin.set_fact:
+    modules_appliques: >-
+      {%- set liste = [] -%}
+      {%- if trigger_backup | default(true) %}{% set _ = liste.append('01-Backup') %}{% endif -%}
+      {%- if trigger_hardening | default(false) %}{% set _ = liste.append('02-Hardening') %}{% endif -%}
+      {%- if trigger_base_services | default(false) %}{% set _ = liste.append('03-Base_Services') %}{% endif -%}
+      {%- if trigger_interfaces | default(false) %}{% set _ = liste.append('04-Interfaces') %}{% endif -%}
+      {%- if trigger_routing | default(false) %}{% set _ = liste.append('05-Routing') %}{% endif -%}
+      {%- set _ = liste.append('06-Save') -%}
+      {{ liste }}
+
+- name: Retour de succes au format JSON pour l'application Web
+  ansible.builtin.debug:
+    msg:
+      status: "success"
+      device: "{{ inventory_hostname }}"
+      message: "Le provisionnement et la sauvegarde ont ete executes avec succes."
+      modules_executed: "{{ modules_appliques }}"
