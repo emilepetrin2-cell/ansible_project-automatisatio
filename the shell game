@@ -1,0 +1,43 @@
+#include <vector>
+#include <iostream>
+#include <algorithm>
+using namespace std;
+
+struct Move{
+    int a, b, g;
+};
+vector<Move> tours;
+
+int simuler(int depart){
+    int pos = depart;
+    int score = 0;
+    for(const auto&m: tours){
+        if(m.b == pos){
+         pos = m.a;
+        }else if(m.a == pos){
+          pos = m.b;
+        }
+        if (m.g == pos){
+          score++;
+        }
+    }
+     return score;
+}   
+
+int main(){
+    freopen("shell.in", "r", stdin);
+    freopen("shell.out", "w", stdout);
+    int n;
+    cin >>n;
+    tours.resize(n);
+    for(int i = 0; i < n; i++){
+        cin >>tours[i].a >> tours[i].b >> tours[i].g;
+    }
+    int score1 = simuler(1);
+    int score2 = simuler(2);
+    int score3 = simuler(3);
+    int score_max = max({score1, score2, score3});
+    cout << score_max << "\n";
+    return 0;
+    
+}
