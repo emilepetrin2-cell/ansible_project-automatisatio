@@ -1,0 +1,28 @@
+#include <vector>
+#include <algorithm>
+#include <iostream>
+using namespace std;
+
+struct Milk{
+    int m, c;
+};
+vector<Milk> bucket(3);
+int main(){
+    freopen("mixmilk.in", "r", stdin);
+    freopen("mixmilk.out", "w", stdout);
+    
+    for(int s = 0; s < 3; s++){
+        cin>>bucket[s].c>>bucket[s].m;
+    }
+    for (int i = 0; i < 100; i++){
+        int seau_source = i%3;
+        int prochain_seau = (i + 1) %3;
+        int quantite = min(bucket[seau_source].m, bucket[prochain_seau].c - bucket[prochain_seau].m);
+        bucket[seau_source].m -= quantite;
+        bucket[prochain_seau].m += quantite;
+    }
+    cout << bucket[0].m << "\n";
+    cout << bucket[1].m << "\n";
+    cout << bucket[2].m << "\n";
+    return 0;
+}
