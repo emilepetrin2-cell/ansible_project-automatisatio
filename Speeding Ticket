@@ -1,0 +1,43 @@
+#include <vector>
+#include <iostream>
+#include <algorithm>
+using namespace std;
+
+
+
+int main(){
+    freopen("speeding.in", "r", stdin);
+    freopen("speeding.out", "w", stdout);
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    
+    vector<int> limite(100, 0);
+    vector<int> bessie(100, 0);
+    int n, m;
+    int range_n, max_speed, range_m, speed;
+   
+    cin>> n >> m;
+    int pos = 0;
+    for(int i = 0; i < n; i++){
+        cin>> range_n >> max_speed;
+        for(int j = pos; j < pos + range_n; j++){
+            limite[j] = max_speed;
+        }
+        pos += range_n;
+    }
+    pos = 0;
+    for(int i = 0; i < m; i++){
+        cin>> range_m >> speed;
+        for(int j = pos; j < pos + range_m; j++){
+            bessie[j] = speed;
+        }
+        pos += range_m;
+    }
+
+    int ans = 0;
+    for(int i = 0; i < 100; i++){
+        ans = max(ans, bessie[i] - limite[i]);
+    }
+    cout<<ans<< "\n";
+    return 0;
+}
