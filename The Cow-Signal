@@ -1,0 +1,27 @@
+#include <vector>
+#include <iostream>
+#include <algorithm>
+using namespace std;
+
+
+int main(){
+    freopen("cowsignal.in", "r", stdin);
+    freopen("cowsignal.out", "w", stdout);
+    int n;
+    int m;
+    int k;
+    string line;
+    cin>> m >> n >> k;
+    for (int i = 0; i < m; i++){
+        cin>>line;
+    
+        string new_line = "";
+        for(char c : line){
+            new_line += string(k, c);
+        }
+        for (int r = 0; r < k; r++) {
+            cout << new_line << "\n";
+            }
+    }
+    return 0;
+}
