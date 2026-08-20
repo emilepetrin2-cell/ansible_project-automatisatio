@@ -1,0 +1,39 @@
+#include <vector>
+#include <iostream>
+#include <algorithm>
+#include <cmath>
+using namespace std;
+
+int main(){
+    freopen("lostcow.in", "r", stdin);
+    freopen("lostcow.out", "w", stdout);
+    ios_base::sync_with_stdio(false);
+    int nombre = 1;
+    cin.tie(NULL);
+
+    int x, y;
+    cin>> x >> y;
+    int total_distance = 0;
+    int step = 1;
+    int current_position = x;
+    int direction = 1;
+    while(true){
+        int next_pos = x + direction * step;
+        if(direction == 1 && next_pos >= y && x <= y){
+            total_distance += abs(y - current_position);
+            break;
+        }
+        if(direction == -1 && next_pos <= y && x >= y){
+            total_distance += abs(y - current_position);
+            break;
+        }
+        total_distance += abs(next_pos - current_position);
+        current_position = next_pos;
+
+        direction *= -1;
+        step *= 2;     
+
+    }
+    cout<< total_distance;
+    return 0;
+}
