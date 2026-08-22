@@ -1,0 +1,35 @@
+#include <vector>
+#include <iostream>
+#include <algorithm>
+#include <numeric>
+using namespace std;
+
+
+int main(){
+    freopen("blist.in", "r", stdin);
+    freopen("blist.out", "w", stdout);
+    int s, t, b;
+    int n;
+    cin>> n;
+    vector<vector<int>> temps(1001); 
+    for(int i = 0; i < n; i++){
+        cin>> s >> t >> b;
+    
+        for(int time = s; time <= t; time++){
+             temps[time].push_back(b);
+         }
+        }
+    for(int i = 0; i < n; i++){
+
+    }
+    int ans = 0;
+    for (int i = 0; i < temps.size(); i++) {
+        int total = accumulate(temps[i].begin(), temps[i].end(), 0);
+        if(total > ans){
+            ans = total;
+        }
+    }
+cout<<ans;
+return 0;
+
+}
