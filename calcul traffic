@@ -1,0 +1,60 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <algorithm>
+
+using namespace std;
+
+int main() {
+    freopen("traffic.in", "r", stdin);
+    freopen("traffic.out", "w", stdout);
+
+    int n;
+    cin >> n;
+
+    vector<string> state(n);
+    vector<int> low(n);
+    vector<int> high(n);
+
+    for (int i = 0; i < n; i++) {
+        cin >> state[i] >> low[i] >> high[i];
+    }
+
+    int L = 0;
+    int R = 1000;
+
+    for (int i = n - 1; i >= 0; i--) {
+        if (state[i] == "none") {
+            L = max(L, low[i]);
+            R = min(R, high[i]);
+        } else if (state[i] == "off") {
+            L += low[i];
+            R += high[i];
+        } else if (state[i] == "on") {
+            L = max(0, L - high[i]);
+            R = max(0, R - low[i]);
+        }
+    }
+
+    cout << L << " " << R << "\n";
+
+    L = 0;
+    R = 1000;
+
+    for (int i = 0; i < n; i++) {
+        if (state[i] == "none") {
+            L = max(L, low[i]);
+            R = min(R, high[i]);
+        } else if (state[i] == "on") {
+            L += low[i];
+            R += high[i];
+        } else if (state[i] == "off") {
+            L = max(0, L - high[i]);
+            R = max(0, R - low[i]);
+        }
+    }
+
+    cout << L << " " << R << "\n";
+
+    return 0;
+}
